@@ -1,6 +1,6 @@
 # Swag Labs (saucedemo.com) PO 模式自动化测试
 
-[![CI](https://github.com/YOUR_GITHUB_USERNAME/saucedemo-pom/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/saucedemo-pom/actions/workflows/ci.yml)
+[![CI](https://github.com/wkaixuan588-sudo/saucedemo-pom/actions/workflows/ci.yml/badge.svg)](https://github.com/wkaixuan588-sudo/saucedemo-pom/actions/workflows/ci.yml)
 
 基于 **Python + Playwright + Pytest** 的 UI 自动化测试项目，采用 **Page Object（PO）模式**，
 页面层（`pages/`）与用例层（`tests/`）分离。
