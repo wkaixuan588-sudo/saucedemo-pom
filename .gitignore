@@ -4,9 +4,10 @@ __pycache__/
 .venv/
 .pytest_cache/
 
-# 测试产物（失败截图/录像/trace）
+# 测试产物（失败截图/录像/trace 与 Allure 本地产物）
 test-results/
 allure-results/
+allure-report/
 .e2e/
 
 # IDE / 系统
