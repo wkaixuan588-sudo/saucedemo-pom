@@ -1,5 +1,7 @@
 # Swag Labs (saucedemo.com) PO 模式自动化测试
 
+[![CI](https://github.com/YOUR_GITHUB_USERNAME/saucedemo-pom/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/saucedemo-pom/actions/workflows/ci.yml)
+
 基于 **Python + Playwright + Pytest** 的 UI 自动化测试项目，采用 **Page Object（PO）模式**，
 页面层（`pages/`）与用例层（`tests/`）分离。
 
@@ -14,7 +16,7 @@
 ```
 saucedemo_pom/
 ├── pages/                          # 页面层：元素定位 + 页面操作 + 页面断言
-│   ├── base_page.py                # 页面基类（URL、公共方法）
+│   ├── base_page.py                # 页面基类（URL、公共等待/金额解析）
 │   ├── login_page.py               # 登录页
 │   ├── inventory_page.py           # 商品库存页
 │   ├── cart_page.py                # 购物车页
@@ -22,11 +24,13 @@ saucedemo_pom/
 │   ├── checkout_overview_page.py   # 结算第二步：订单总览
 │   └── checkout_complete_page.py   # 结算完成页
 ├── tests/                          # 用例层：只描述业务流程与断言，不写选择器
-│   ├── conftest.py                 # 公共夹具与测试数据
+│   ├── conftest.py                 # 公共夹具
+│   ├── data.py                     # 测试数据（账号、收货信息）集中管理
 │   ├── test_login.py               # 登录用例
 │   └── test_checkout_flow.py       # 加购 + 结算主流程用例
-├── pytest.ini                      # pytest 配置（默认有头模式）
-└── requirements.txt                # 依赖清单
+├── .github/workflows/ci.yml        # CI：push 全量回归 + 每周定时巡检
+├── pytest.ini                      # pytest 配置（默认有头模式 + 失败截图/录像/trace）
+└── requirements.txt                # 依赖清单（锁版本，保证可复现）
 ```
 
 ## 环境准备
@@ -48,10 +52,13 @@ pytest
 # 仅运行主流程用例
 pytest tests/test_checkout_flow.py
 
-# 无头模式运行（CI 中使用）
-pytest -o addopts="--browser=chromium"
+# 仅运行冒烟用例（登录成功 + 下单主链路）
+pytest -m smoke
 
-# 失败时自动截图/录像/trace 输出到 test-results/（pytest-playwright 内置）
+# 无头模式运行（CI 中使用）
+pytest -o addopts="--browser=chromium --screenshot only-on-failure --video retain-on-failure --tracing retain-on-failure"
+
+# 失败时自动截图/录像/trace 输出到 test-results/（pytest.ini 已显式配置）
 ```
 
 ## 设计说明

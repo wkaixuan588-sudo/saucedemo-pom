@@ -14,3 +14,14 @@ class BasePage:
         """打开指定路径的页面（相对 BASE_URL）。"""
         self.page.goto(f"{self.BASE_URL}{path}")
         return self
+
+    def _wait_items_ready(self, item_selector: str, name_selector: str, timeout_ms: int = 5000) -> None:
+        """等待列表条目渲染完成（React 页面 URL 就绪后 DOM 可能稍后才挂载）。"""
+        self.page.locator(f"{item_selector} {name_selector}").first.wait_for(
+            state="attached", timeout=timeout_ms
+        )
+
+    @staticmethod
+    def _parse_price(text: str) -> float:
+        """把 '$29.99' 之类的文本解析成 29.99。"""
+        return float(text.replace("$", "").strip())

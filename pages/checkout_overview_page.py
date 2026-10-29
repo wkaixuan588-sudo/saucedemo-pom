@@ -26,18 +26,12 @@ class CheckoutOverviewPage(BasePage):
         return CheckoutCompletePage(self.page)
 
     # ---------- 数据读取 ----------
-    def _wait_items_ready(self, timeout_ms: int = 5000) -> None:
-        """等待订单条目渲染完成（React 页面 URL 就绪后 DOM 可能稍后才挂载）。"""
-        self.page.locator(f"{self.CART_ITEM} {self.ITEM_NAME}").first.wait_for(
-            state="attached", timeout=timeout_ms
-        )
-
     def item_names(self) -> list[str]:
-        self._wait_items_ready()
+        self._wait_items_ready(self.CART_ITEM, self.ITEM_NAME)
         return [e.inner_text() for e in self.page.locator(f"{self.CART_ITEM} {self.ITEM_NAME}").all()]
 
     def item_prices(self) -> list[float]:
-        self._wait_items_ready()
+        self._wait_items_ready(self.CART_ITEM, self.ITEM_NAME)
         return [
             self._parse_price(e.inner_text())
             for e in self.page.locator(f"{self.CART_ITEM} {self.ITEM_PRICE}").all()
@@ -52,7 +46,3 @@ class CheckoutOverviewPage(BasePage):
         expect(self.page.locator(self.SUMMARY_SUBTOTAL)).to_have_text(f"Item total: ${expect_item_total:.2f}")
         expect(self.page.locator(self.SUMMARY_TAX)).to_have_text(f"Tax: ${expect_tax:.2f}")
         expect(self.page.locator(self.SUMMARY_TOTAL)).to_have_text(f"Total: ${expect_total:.2f}")
-
-    @staticmethod
-    def _parse_price(text: str) -> float:
-        return float(text.replace("$", "").strip())

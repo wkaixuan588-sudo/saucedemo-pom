@@ -4,11 +4,11 @@
 流程：登录 -> 添加两款商品到购物车 -> 打开购物车 -> 填写收货信息
      -> 校验订单总览金额 -> 提交订单 -> 断言下单成功。
 """
-from tests.conftest import (
-    CHECKOUT_FIRST_NAME,
-    CHECKOUT_LAST_NAME,
-    CHECKOUT_POSTAL_CODE,
-)
+import pytest
+
+from tests.data import CHECKOUT_FIRST_NAME, CHECKOUT_LAST_NAME, CHECKOUT_POSTAL_CODE
+
+pytestmark = [pytest.mark.regression]
 
 # 选择加购的两款商品（data-test 中的 slug）
 BACKPACK_SLUG = "sauce-labs-backpack"
@@ -20,6 +20,7 @@ BACKPACK_PRICE = 29.99
 BIKE_LIGHT_PRICE = 9.99
 
 
+@pytest.mark.smoke
 def test_add_two_products_and_checkout(logged_in_inventory):
     """登录后添加两款商品到购物车并完成结算。"""
     # 1. 添加两款商品到购物车

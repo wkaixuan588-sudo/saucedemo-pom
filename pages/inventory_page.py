@@ -54,8 +54,3 @@ class InventoryPage(BasePage):
     # ---------- 页面断言 ----------
     def expect_cart_badge(self, count: int) -> None:
         expect(self.page.locator(self.CART_BADGE)).to_have_text(str(count))
-
-    @staticmethod
-    def _parse_price(text: str) -> float:
-        """把 '$29.99' 之类的文本解析成 29.99。"""
-        return float(text.replace("$", "").strip())

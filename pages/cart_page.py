@@ -24,18 +24,12 @@ class CartPage(BasePage):
         return CheckoutInfoPage(self.page)
 
     # ---------- 数据读取 ----------
-    def _wait_items_ready(self, timeout_ms: int = 5000) -> None:
-        """等待购物车条目渲染完成（React 页面 URL 就绪后 DOM 可能稍后才挂载）。"""
-        self.page.locator(f"{self.CART_ITEM} {self.ITEM_NAME}").first.wait_for(
-            state="attached", timeout=timeout_ms
-        )
-
     def item_names(self) -> list[str]:
-        self._wait_items_ready()
+        self._wait_items_ready(self.CART_ITEM, self.ITEM_NAME)
         return [e.inner_text() for e in self.page.locator(f"{self.CART_ITEM} {self.ITEM_NAME}").all()]
 
     def item_prices(self) -> list[float]:
-        self._wait_items_ready()
+        self._wait_items_ready(self.CART_ITEM, self.ITEM_NAME)
         return [
             self._parse_price(e.inner_text())
             for e in self.page.locator(f"{self.CART_ITEM} {self.ITEM_PRICE}").all()
@@ -44,7 +38,3 @@ class CartPage(BasePage):
     # ---------- 页面断言 ----------
     def expect_page(self) -> None:
         expect(self.page).to_have_url(f"{self.BASE_URL}cart.html")
-
-    @staticmethod
-    def _parse_price(text: str) -> float:
-        return float(text.replace("$", "").strip())

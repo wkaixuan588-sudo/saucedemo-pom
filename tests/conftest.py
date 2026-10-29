@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
-"""pytest 公共夹具与测试数据。"""
+"""pytest 公共夹具（测试数据统一放 tests/data.py）。"""
 import pytest
 
 from pages import InventoryPage, LoginPage
-
-# ---------------- 测试数据 ----------------
-STANDARD_USER = "standard_user"
-STANDARD_PASSWORD = "secret_sauce"
-
-CHECKOUT_FIRST_NAME = "John"
-CHECKOUT_LAST_NAME = "Doe"
-CHECKOUT_POSTAL_CODE = "100001"
+from tests.data import STANDARD_PASSWORD, STANDARD_USER
 
 
 @pytest.fixture
