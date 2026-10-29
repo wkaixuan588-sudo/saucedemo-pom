@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# 测试产物（失败截图/录像/trace）
+test-results/
+allure-results/
+.e2e/
+
+# IDE / 系统
+.idea/
+.vscode/
+.DS_Store
