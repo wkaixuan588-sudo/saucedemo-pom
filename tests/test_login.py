@@ -18,7 +18,6 @@ from tests.data import (
 pytestmark = [pytest.mark.regression]
 
 
-@pytest.mark.smoke
 @pytest.mark.parametrize(
     "user, expected, error_fragment",
     LOGIN_MATRIX,
