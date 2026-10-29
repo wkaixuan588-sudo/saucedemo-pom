@@ -16,6 +16,11 @@ class CartPage(BasePage):
     ITEM_PRICE = ".inventory_item_price"
 
     # ---------- 元素操作 ----------
+    def remove_item(self, slug: str) -> "CartPage":
+        """在购物车页移除指定商品。"""
+        self.page.locator(f'[data-test="remove-{slug}"]').click()
+        return self
+
     def click_checkout(self) -> "CheckoutInfoPage":
         """点击 Checkout 按钮进入结算信息页。"""
         self.page.locator(self.CHECKOUT_BUTTON).click()

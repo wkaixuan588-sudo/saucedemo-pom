@@ -1,23 +1,27 @@
 # -*- coding: utf-8 -*-
-"""购物与结算流程测试用例（对应手工验证过的主流程）。
+"""购物与结算流程测试用例。
 
-流程：登录 -> 添加两款商品到购物车 -> 打开购物车 -> 填写收货信息
+主流程（场景法）：登录 -> 添加两款商品到购物车 -> 打开购物车 -> 填写收货信息
      -> 校验订单总览金额 -> 提交订单 -> 断言下单成功。
+负向（判定表）：收货信息单字段缺失 -> 对应必填提示，且停留在当前页。
 """
 import pytest
 
-from tests.data import CHECKOUT_FIRST_NAME, CHECKOUT_LAST_NAME, CHECKOUT_POSTAL_CODE
+from pages import CartPage
+from tests.data import (
+    CHECKOUT_FIRST_NAME,
+    CHECKOUT_LAST_NAME,
+    CHECKOUT_POSTAL_CODE,
+    CHECKOUT_REQUIRED_FIELDS,
+    PRODUCTS,
+)
 
 pytestmark = [pytest.mark.regression]
 
-# 选择加购的两款商品（data-test 中的 slug）
 BACKPACK_SLUG = "sauce-labs-backpack"
 BIKE_LIGHT_SLUG = "sauce-labs-bike-light"
-# 商品名与其单价（与站点一致，用于断言）
-BACKPACK_NAME = "Sauce Labs Backpack"
-BIKE_LIGHT_NAME = "Sauce Labs Bike Light"
-BACKPACK_PRICE = 29.99
-BIKE_LIGHT_PRICE = 9.99
+BACKPACK_NAME, BACKPACK_PRICE = PRODUCTS[BACKPACK_SLUG]
+BIKE_LIGHT_NAME, BIKE_LIGHT_PRICE = PRODUCTS[BIKE_LIGHT_SLUG]
 
 
 @pytest.mark.smoke
@@ -61,3 +65,25 @@ def test_add_two_products_and_checkout(logged_in_inventory):
     # 7. 返回首页，购物车角标应消失（下单后购物车被清空）
     inventory = complete.click_back_home()
     assert inventory.cart_badge_count() is None
+
+
+@pytest.mark.parametrize("missing_field, expected_error", CHECKOUT_REQUIRED_FIELDS)
+def test_checkout_missing_required_field(logged_in_inventory, missing_field, expected_error):
+    """收货信息单字段缺失时提示对应必填错误，且不进入下一步。"""
+    logged_in_inventory.add_to_cart(BACKPACK_SLUG)
+    cart_page: CartPage = logged_in_inventory.open_cart()
+    checkout_info = cart_page.click_checkout()
+
+    # 只填两项、留空一项
+    if missing_field != "first":
+        checkout_info.fill_first_name(CHECKOUT_FIRST_NAME)
+    if missing_field != "last":
+        checkout_info.fill_last_name(CHECKOUT_LAST_NAME)
+    if missing_field != "postal":
+        checkout_info.fill_postal_code(CHECKOUT_POSTAL_CODE)
+
+    checkout_info.page.locator(checkout_info.CONTINUE_BUTTON).click()
+
+    # 断言错误提示出现，且仍停留在收货信息页
+    checkout_info.expect_error_visible(expected_error)
+    checkout_info.expect_page()

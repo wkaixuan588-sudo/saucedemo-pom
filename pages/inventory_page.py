@@ -11,6 +11,7 @@ class InventoryPage(BasePage):
     # ---------- 元素定位 ----------
     CART_LINK = '[data-test="shopping-cart-link"]'
     CART_BADGE = '[data-test="shopping-cart-badge"]'
+    SORT_CONTAINER = '[data-test="product-sort-container"]'
     INVENTORY_ITEM = ".inventory_item"
     ITEM_NAME = ".inventory_item_name"
     ITEM_PRICE = ".inventory_item_price"
@@ -32,6 +33,11 @@ class InventoryPage(BasePage):
         self.page.locator(self._remove_button(slug)).click()
         return self
 
+    def sort_by(self, option: str) -> "InventoryPage":
+        """选择排序方式，option 取值：az / za / lohi / hilo。"""
+        self.page.locator(self.SORT_CONTAINER).select_option(option)
+        return self
+
     def open_cart(self) -> "CartPage":
         """点击右上角购物车图标，进入购物车页。"""
         self.page.locator(self.CART_LINK).click()
@@ -46,11 +52,17 @@ class InventoryPage(BasePage):
         return int(badge.inner_text()) if badge.count() else None
 
     def item_names(self) -> list[str]:
+        self._wait_items_ready(self.INVENTORY_ITEM, self.ITEM_NAME)
         return [e.inner_text() for e in self.page.locator(self.ITEM_NAME).all()]
 
     def item_prices(self) -> list[float]:
+        self._wait_items_ready(self.INVENTORY_ITEM, self.ITEM_NAME)
         return [self._parse_price(e.inner_text()) for e in self.page.locator(self.ITEM_PRICE).all()]
 
     # ---------- 页面断言 ----------
     def expect_cart_badge(self, count: int) -> None:
         expect(self.page.locator(self.CART_BADGE)).to_have_text(str(count))
+
+    def expect_first_item(self, name: str) -> None:
+        """断言列表第一件商品名（排序后用作生效哨兵，expect 自动重试）。"""
+        expect(self.page.locator(self.ITEM_NAME).first).to_have_text(name)

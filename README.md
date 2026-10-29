@@ -3,7 +3,8 @@
 [![CI](https://github.com/wkaixuan588-sudo/saucedemo-pom/actions/workflows/ci.yml/badge.svg)](https://github.com/wkaixuan588-sudo/saucedemo-pom/actions/workflows/ci.yml)
 
 基于 **Python + Playwright + Pytest** 的 UI 自动化测试项目，采用 **Page Object（PO）模式**，
-页面层（`pages/`）与用例层（`tests/`）分离。
+页面层（`pages/`）与用例层（`tests/`）分离。当前 **20 条用例**覆盖登录等价类矩阵、
+商品排序、购物车操作、结算主流程与必填负向校验，设计方法详见 [docs/test-design.md](docs/test-design.md)。
 
 ## 测试业务流程
 
@@ -25,9 +26,13 @@ saucedemo_pom/
 │   └── checkout_complete_page.py   # 结算完成页
 ├── tests/                          # 用例层：只描述业务流程与断言，不写选择器
 │   ├── conftest.py                 # 公共夹具
-│   ├── data.py                     # 测试数据（账号、收货信息）集中管理
-│   ├── test_login.py               # 登录用例
-│   └── test_checkout_flow.py       # 加购 + 结算主流程用例
+│   ├── data.py                     # 测试数据（账号矩阵、商品目录、错误文案）集中管理
+│   ├── test_login.py               # 登录用例（6 账号等价类矩阵 + 边界值）
+│   ├── test_sort.py                # 商品排序用例（4 种排序参数化）
+│   ├── test_cart.py                # 购物车用例（角标联动 + error_user 静默失败）
+│   └── test_checkout_flow.py       # 结算主流程 + 必填负向用例
+├── docs/
+│   └── test-design.md              # 测试设计说明（方法/覆盖矩阵/已知限制）
 ├── .github/workflows/ci.yml        # CI：push 全量回归 + 每周定时巡检
 ├── pytest.ini                      # pytest 配置（默认有头模式 + 失败截图/录像/trace）
 └── requirements.txt                # 依赖清单（锁版本，保证可复现）

@@ -42,3 +42,10 @@ class CheckoutInfoPage(BasePage):
     # ---------- 页面断言 ----------
     def expect_page(self) -> None:
         expect(self.page).to_have_url(f"{self.BASE_URL}checkout-step-one.html")
+
+    def expect_error_visible(self, contains: str | None = None) -> None:
+        """断言必填校验失败并出现错误提示。"""
+        error = self.page.locator(self.ERROR_MESSAGE)
+        expect(error).to_be_visible()
+        if contains:
+            expect(error).to_contain_text(contains)
